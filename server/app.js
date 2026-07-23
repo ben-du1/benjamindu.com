@@ -10,7 +10,7 @@ const HTTP_PORT = 80
 const HTTPS_PORT = 443
 const UPLOAD_DIR = path.join(__dirname+'/media')
 const BUILD_DIR = path.join(__dirname+'/build')
-const PASSWORD_KEY = "skibidi"
+const PASSWORD_KEY = "NOT_THE_PRODUCTION_PASSWORD"
 const USE_HTTPS = true;
 
 const {authInit,authCheck} = require('./helpers/auth.js')
