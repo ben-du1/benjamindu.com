@@ -12,7 +12,7 @@ function upload(req,UPLOAD_DIR,PASSWORD_KEY,res) {
 
             if (err) {
                 console.log(err)
-                return res.send(404)
+                return res.sendStatus(500)
             }
 
             const randomPrefix = Math.floor(Math.random() * (99999-10000 + 1)) + 10000
@@ -20,10 +20,12 @@ function upload(req,UPLOAD_DIR,PASSWORD_KEY,res) {
             const uploadMedia = files.file[0]
             const newFilePath = UPLOAD_DIR + '/' + randomPrefix + uploadMedia.originalFilename
             fs.rename(uploadMedia.filepath,newFilePath,(err) => {
-                console.log(err)
-                return res.send(404)
+                if (err) {
+                    console.log(err)
+                    return res.sendStatus(500)
+                }
+                return res.send(200)
             })
-            return res.send(200)
         })
 }
 

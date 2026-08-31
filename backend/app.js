@@ -84,7 +84,7 @@ app.post('/deletefile',(req,res) => {
 
 // ---------------------------------------
 
-app.get('/{*any}',(req,res) => {
+app.get(/.*/, (req,res) => {
     res.sendFile(BUILD_DIR+'/index.html')
 })
 
@@ -93,7 +93,7 @@ if (USE_HTTPS) {
     var certificate = fs.readFileSync('/etc/letsencrypt/live/benjamindu.com/fullchain.pem', 'utf8');
     var credentials = {key:privateKey, cert:certificate}
 
-    httpsServer = https.createServer(credentials,app)
+    var httpsServer = https.createServer(credentials,app)
     httpsServer.listen(HTTPS_PORT,() => {
         console.log("benjamindu.com-v5 HTTPS server running on port "+HTTPS_PORT)
     })
