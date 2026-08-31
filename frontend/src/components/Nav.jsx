@@ -2,20 +2,10 @@ import { Link } from "react-router";
 import { GiHamburgerMenu } from "react-icons/gi";
 import { IoIosMail } from "react-icons/io";
 import { FaGithub } from "react-icons/fa";
-import {useState,useRef} from 'react'
+import { FaLinkedin } from "react-icons/fa";
+import {useState} from 'react'
 
 export default function Nav() {
-
-    // const _menuList = useRef(null)
-
-    // const onMenuClick = () => {
-    //     if (_menuList.current.style["display"] == "none") {
-    //         _menuList.current.style["display"] = "block"
-    //     }
-    //     else {
-    //         _menuList.current.style["display"] = "none"
-    //     }
-    // }
 
     const [menuOpen,setMenuOpen] = useState(false)
     
@@ -28,6 +18,7 @@ export default function Nav() {
                 <Link to="/console"><h2><b>/</b>extras</h2></Link> */}
                 <div class="socials">
                     <a target="_blank" href="https://github.com/ben-du1"><FaGithub color="mediumorchid" size={35} /></a>
+                    <a target="_blank" href="https://linkedin.com/in/bingzhoudu"><FaLinkedin color="mediumorchid" size={35} /></a>
                     <a target="_blank" href="mailto:bennybob156@gmail.com"><IoIosMail color="mediumorchid" size={49} /></a>
                 </div>
             </li>

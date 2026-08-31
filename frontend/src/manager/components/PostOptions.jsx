@@ -33,6 +33,10 @@ export default function PostOptions({reloadPosts,post}) {
     }
 
     const deletePost = async () => {
+        if (!window.confirm('Are you sure you want to delete this post? This action cannot be undone.')) {
+            return
+        }
+        
         const response = await fetch(SERVER_URL+"/delete",{
             method:"POST",
             headers:{"content-type":"application/json"},
@@ -61,7 +65,7 @@ export default function PostOptions({reloadPosts,post}) {
                 <input type="text" value={title} placeholder="Title" onChange={(e) => setTitle(e.target.value)}></input> <br/>
                 <input type="text" value={description} placeholder="Description" onChange={(e) => setDescription(e.target.value)}></input> <br/>
                 <input type="text" value={date} placeholder="Date (M.D.Y)" onChange={(e) => setDate(e.target.value)}></input> <br/>
-                <input type="text" value={image} placehodler="Image Link" onChange={(e) => setImage(e.target.value)}></input> <br />
+                <input type="text" value={image} placeholder="Image Link" onChange={(e) => setImage(e.target.value)}></input> <br />
                 <textarea type="text" value={content} placeholder="Content (Markdown)" onChange={(e) => setContent(e.target.value)}></textarea> <br/>
                 <button onClick={updatePost}>Save</button>
                 </>

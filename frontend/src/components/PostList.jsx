@@ -5,12 +5,22 @@ import SERVER_URL from "../lib/SERVER_URL";
 export default function PostList() {
 
     const [posts, setPosts] = useState([])
+    const [error, setError] = useState(null)
 
     const getPosts = async () => {
-        const response = await fetch(SERVER_URL+'/posts')
-        const data = await response.json()
-        if(data.length > 0) {
-            setPosts(data.reverse())
+        try {
+            const response = await fetch(SERVER_URL+'/posts')
+            if (!response.ok) {
+                throw new Error('Failed to fetch posts')
+            }
+            const data = await response.json()
+            if(data && data.length > 0) {
+                setPosts(data.reverse())
+                setError(null)
+            }
+        } catch (err) {
+            setError(err.message)
+            console.error(err)
         }
     }
 
@@ -20,10 +30,14 @@ export default function PostList() {
     },[])
    
 
+    if (error) {
+        return <div className="PostList"><h2>Error: {error}</h2></div>
+    }
+
     return (
         <div className="PostList">
            {posts.map((post) => (
-            <Container title={post.title} description={post.description} date={post.date} postId={post.id} image={post.image}/>
+            <Container key={post.id} title={post.title} description={post.description} date={post.date} postId={post.id} image={post.image}/>
            ))}
         </div>
     )

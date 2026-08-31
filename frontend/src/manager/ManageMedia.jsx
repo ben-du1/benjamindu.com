@@ -27,7 +27,7 @@ export default function ManageMedia({show}) {
                 show ? 
                 (<>
                 {files.map((file) => (
-                <Media fileName={file}/>
+                <Media key={file} fileName={file}/>
                 ))}
                 </>)
                 :

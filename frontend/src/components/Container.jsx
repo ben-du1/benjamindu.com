@@ -4,7 +4,7 @@ export default function Container({title,description,date,postId,image}) {
     return (
         <Link to={"/post/"+postId}>
         <div className="Container" id={postId}>
-            <img src={image} />
+            <img src={image} alt={title} />
             <header>
                 <h1>{title}</h1>
                 <h2>{description}</h2>
