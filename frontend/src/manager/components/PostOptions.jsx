@@ -1,34 +1,44 @@
 import {useState} from 'react'
 import SERVER_URL from '../../lib/SERVER_URL'
 
-export default function PostOptions({reloadPosts,post}) {
+export default function PostOptions({reloadPosts,post,canMoveUp,canMoveDown,canReorder,moveUp,moveDown}) {
     const [title,setTitle] = useState(post.title)
+    const [slug,setSlug] = useState(post.slug)
     const [description,setDescription] = useState(post.description)
     const [date,setDate] = useState(post.date)
     const [content,setContent] = useState(post.content)
     const [image,setImage] = useState(post.image)
     const [showMore,setShowMore] = useState(false)
+    const [saving,setSaving] = useState(false)
+    const [feedback,setFeedback] = useState('')
+    const [deleting,setDeleting] = useState(false)
 
     const updatePost = async () => {
-        const response = await fetch(SERVER_URL+"/updatepost",{
-            method:"POST",
-            headers:{"content-type":"application/json"},
-            body:JSON.stringify({
-                'password':sessionStorage.getItem('password'),
-                'id':post.id,
-                "title":title,
-                "description":description,
-                "date":date,
-                "content":content,
-                "image":image
+        setSaving(true)
+        setFeedback('Saving...')
+        try {
+            const response = await fetch(SERVER_URL+"/updatepost",{
+                method:"POST",
+                headers:{"content-type":"application/json"},
+                body:JSON.stringify({
+                    'password':sessionStorage.getItem('password'),
+                    'id':post.id,
+                    "title":title,
+                    "slug":slug,
+                    "description":description,
+                    "date":date,
+                    "content":content,
+                    "image":image
+                })
             })
-        })
 
-        const status = response.status
-        if (status === 200) {
-            console.log("success")
-        } else {
-            console.log("failure")
+            if (!response.ok) throw new Error('Failed to save post')
+            setFeedback('Saved successfully')
+            reloadPosts()
+        } catch (err) {
+            setFeedback(err.message)
+        } finally {
+            setSaving(false)
         }
     }
 
@@ -37,37 +47,50 @@ export default function PostOptions({reloadPosts,post}) {
             return
         }
         
-        const response = await fetch(SERVER_URL+"/delete",{
-            method:"POST",
-            headers:{"content-type":"application/json"},
-            body:JSON.stringify({
-                'id':post.id,
-                'password':sessionStorage.getItem('password')
+        setDeleting(true)
+        setFeedback('Deleting...')
+        try {
+            const response = await fetch(SERVER_URL+"/delete",{
+                method:"POST",
+                headers:{"content-type":"application/json"},
+                body:JSON.stringify({
+                    'id':post.id,
+                    'password':sessionStorage.getItem('password')
+                })
             })
-        })
 
-        const status = response.status
-        if (status === 200) {
-            console.log("success")
+            if (!response.ok) throw new Error('Failed to delete post')
             reloadPosts()
-        } else {
-            console.log("failure")
+        } catch (err) {
+            setFeedback(err.message)
+        } finally {
+            setDeleting(false)
         }
     }
 
     return (
         <div>
-            <h3>{post.title} <button onClick={(e) => {setShowMore(!showMore)}}>Manage</button><button onClick={deletePost}>Delete</button></h3>
+            <h3>
+                <span>{post.title}</span>
+                <span className="post-order-controls">
+                    <button disabled={!canMoveUp || !canReorder} onClick={moveUp}>Up</button>
+                    <button disabled={!canMoveDown || !canReorder} onClick={moveDown}>Down</button>
+                </span>
+                <button onClick={(e) => {setShowMore(!showMore)}}>Manage</button>
+                <button disabled={deleting} onClick={deletePost}>{deleting ? 'Deleting...' : 'Delete'}</button>
+            </h3>
 
             {
                 showMore ? 
                 <>
                 <input type="text" value={title} placeholder="Title" onChange={(e) => setTitle(e.target.value)}></input> <br/>
+                <input type="text" value={slug} placeholder="Slug" onChange={(e) => setSlug(e.target.value)}></input> <br/>
                 <input type="text" value={description} placeholder="Description" onChange={(e) => setDescription(e.target.value)}></input> <br/>
                 <input type="text" value={date} placeholder="Date (M.D.Y)" onChange={(e) => setDate(e.target.value)}></input> <br/>
                 <input type="text" value={image} placeholder="Image Link" onChange={(e) => setImage(e.target.value)}></input> <br />
                 <textarea type="text" value={content} placeholder="Content (Markdown)" onChange={(e) => setContent(e.target.value)}></textarea> <br/>
-                <button onClick={updatePost}>Save</button>
+                <button disabled={saving} onClick={updatePost}>{saving ? 'Saving...' : 'Save'}</button>
+                {feedback && <p className="console-feedback">{feedback}</p>}
                 </>
                 : ''
             }

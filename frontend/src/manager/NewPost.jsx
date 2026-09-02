@@ -1,33 +1,46 @@
 import {useState} from 'react'
 import SERVER_URL from '../lib/SERVER_URL'
 
-export default function NewPost({show}) {
+export default function NewPost({show, onCreated}) {
 
     const [title,setTitle] = useState('')
     const [description,setDescription] = useState('')
     const [date,setDate] = useState('')
     const [content,setContent] = useState('')
     const [image,setImage] = useState('')
+    const [feedback, setFeedback] = useState('')
+    const [saving, setSaving] = useState(false)
 
     const createPost = async () => {
-        const response = await fetch(SERVER_URL+'/createpost',{
-            method:'POST',
-            headers:{'content-type':'application/json'},
-            body:JSON.stringify({
-                "password":sessionStorage.getItem('password'),
-                "title":title,
-                "description":description,
-                "date":date,
-                "content":content,
-                "image":image
+        setSaving(true)
+        setFeedback('Creating post...')
+        try {
+            const response = await fetch(SERVER_URL+'/createpost',{
+                method:'POST',
+                headers:{'content-type':'application/json'},
+                body:JSON.stringify({
+                    "password":sessionStorage.getItem('password'),
+                    "title":title,
+                    "description":description,
+                    "date":date,
+                    "content":content,
+                    "image":image
+                })
             })
-        })
-        const status = response.status 
-
-        if (status === 200) {
-            console.log("success")
-        } else {
-            console.log("failure")
+            if (!response.ok) {
+                throw new Error('Failed to create post')
+            }
+            setTitle('')
+            setDescription('')
+            setDate('')
+            setContent('')
+            setImage('')
+            setFeedback('Post created successfully')
+            if (onCreated) onCreated()
+        } catch (err) {
+            setFeedback(err.message)
+        } finally {
+            setSaving(false)
         }
     }
 
@@ -41,7 +54,8 @@ export default function NewPost({show}) {
                     <input type="text" placeholder="Date (M.D.Y)" value={date} onChange={(e) => setDate(e.target.value)}></input> <br/>
                     <input type="text" placeholder="Image Link" value={image} onChange={(e) => setImage(e.target.value)}></input> <br/>
                     <textarea type="text" placeholder="Content (Markdown)" value={content} onChange={(e) => setContent(e.target.value)}></textarea> <br/>
-                    <button onClick={createPost}>Create</button>
+                    <button disabled={saving} onClick={createPost}>{saving ? 'Creating...' : 'Create'}</button>
+                    {feedback && <p className="console-feedback">{feedback}</p>}
                     </>
                 ): ''
             }

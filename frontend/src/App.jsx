@@ -10,7 +10,7 @@ function App() {
       <Nav />
       <Routes >
         <Route path="/" element={<Home />} />
-        <Route path="/post/:postId" element={<Post />} />
+        <Route path="/post/:postSlug" element={<Post />} />
         <Route path="/console" element={<Console />} />
       </Routes>
     </div>

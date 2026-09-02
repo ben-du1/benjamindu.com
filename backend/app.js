@@ -19,6 +19,7 @@ const getPost = require('./helpers/getPost.js')
 const createPost = require('./helpers/createPost.js')
 const updatePost = require("./helpers/updatePost.js")
 const deletePost = require('./helpers/deletePost.js')
+const reorderPosts = require('./helpers/reorderPosts.js')
 const upload = require('./helpers/upload.js')
 const serveFile = require("./helpers/serveFile.js")
 const getFiles = require('./helpers/getFiles.js')
@@ -33,8 +34,12 @@ app.post('/auth',(req,res) => {
     authInit(req.body.password,PASSWORD_KEY,res)
 })
 
+app.get('/post/:slug', (req,res) => {
+    getPost(db, req.params.slug, res)
+})
+
 app.get('/post',(req,res) => {
-    getPost(db,req.query.id,res)
+    getPost(db, req.query.id ?? req.query.slug, res)
 })
 
 app.get('/posts',(req,res) => {
@@ -47,6 +52,12 @@ app.post('/delete',(req,res) => {
     }
 })
 
+app.post('/reorderposts',(req,res) => {
+    if (authCheck(req.body.password,PASSWORD_KEY,res)) {
+        reorderPosts(db, req.body.ids, res)
+    }
+})
+
 app.post('/createpost',(req,res) => {
     if (authCheck(req.body.password,PASSWORD_KEY,res)) {
         createPost(db,req.body.title,req.body.description,req.body.date,req.body.content,req.body.image,res)
@@ -55,7 +66,7 @@ app.post('/createpost',(req,res) => {
 
 app.post('/updatepost',(req,res) => {
     if (authCheck(req.body.password,PASSWORD_KEY,res)) {
-        updatePost(db,req.body.id,req.body.title,req.body.description,req.body.date,req.body.content,req.body.image,res)
+        updatePost(db,req.body.id,req.body.title,req.body.description,req.body.date,req.body.content,req.body.image,req.body.slug,res)
     } 
 })
 
@@ -84,9 +95,9 @@ app.post('/deletefile',(req,res) => {
 
 // ---------------------------------------
 
-app.get(/.*/, (req,res) => {
-    res.sendFile(BUILD_DIR+'/index.html')
-})
+// app.get(/.*/, (req,res) => {
+//     res.sendFile(BUILD_DIR+'/index.html')
+// })
 
 if (USE_HTTPS) {
     var privateKey  = fs.readFileSync('/etc/letsencrypt/live/benjamindu.com/privkey.pem', 'utf8');

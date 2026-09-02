@@ -15,7 +15,7 @@ export default function PostList() {
             }
             const data = await response.json()
             if(data && data.length > 0) {
-                setPosts(data.reverse())
+                setPosts(data)
                 setError(null)
             }
         } catch (err) {
@@ -37,7 +37,7 @@ export default function PostList() {
     return (
         <div className="PostList">
            {posts.map((post) => (
-            <Container key={post.id} title={post.title} description={post.description} date={post.date} postId={post.id} image={post.image}/>
+            <Container key={post.id} title={post.title} description={post.description} date={post.date} postId={post.id} slug={post.slug} image={post.image}/>
            ))}
         </div>
     )

@@ -1,9 +1,11 @@
 import { useEffect,useState } from "react";
 import SERVER_URL from "../../lib/SERVER_URL";
 
-export default function Media({fileName}) {
+export default function Media({fileName, onDeleted}) {
 
     const [isImage,setIsImage] = useState(false)
+    const [deleting,setDeleting] = useState(false)
+    const [feedback,setFeedback] = useState('')
 
     useEffect(() => {
         const fileType = fileName.split('.').at(-1).toLowerCase()
@@ -11,15 +13,28 @@ export default function Media({fileName}) {
     },[])
 
     const deleteMedia = async () => {
-        const response = await fetch(SERVER_URL+"/deletefile",{
-            method:"POST",
-            headers:{'content-type':'application/json'},
-            body: JSON.stringify({
-                "fileName":fileName,
-                'password':sessionStorage.getItem('password')
+        if (!window.confirm(`Are you sure you want to delete "${fileName}"? This action cannot be undone.`)) {
+            return
+        }
+
+        setDeleting(true)
+        setFeedback('')
+        try {
+            const response = await fetch(SERVER_URL+"/deletefile",{
+                method:"POST",
+                headers:{'content-type':'application/json'},
+                body: JSON.stringify({
+                    "fileName":fileName,
+                    'password':sessionStorage.getItem('password')
+                })
             })
-        })
-        response.status == 200 ? console.log('success') : console.log('failure')
+            if (!response.ok) throw new Error('Failed to delete media')
+            if (onDeleted) onDeleted(fileName)
+        } catch (err) {
+            setFeedback(err.message)
+        } finally {
+            setDeleting(false)
+        }
     }
 
     return (
@@ -32,8 +47,9 @@ export default function Media({fileName}) {
             <footer>
                 <button onClick={() => navigator.clipboard.writeText(`${SERVER_URL}/file/${fileName}`)}>Copy</button>
                 <button><a href={`${SERVER_URL}/file/${fileName}`} target="_blank">View</a></button>
-                <button onClick={deleteMedia}>Delete</button>
+                <button disabled={deleting} onClick={deleteMedia}>{deleting ? 'Deleting...' : 'Delete'}</button>
             </footer>
+            {feedback && <p className="media-feedback">{feedback}</p>}
         </div>
     )
 }

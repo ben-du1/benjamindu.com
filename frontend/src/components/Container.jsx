@@ -1,8 +1,10 @@
 import { Link } from "react-router"
 
-export default function Container({title,description,date,postId,image}) {
+export default function Container({title,description,date,postId,slug,image}) {
+    const postSlug = slug || postId
+
     return (
-        <Link to={"/post/"+postId}>
+        <Link to={"/post/" + encodeURIComponent(postSlug)}>
         <div className="Container" id={postId}>
             <img src={image} alt={title} />
             <header>

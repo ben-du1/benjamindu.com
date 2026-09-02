@@ -1,10 +1,11 @@
-import {useState} from 'react'
+import {useRef,useState} from 'react'
 import SERVER_URL from '../lib/SERVER_URL'
 
-export default function UploadMedia({show}) {
+export default function UploadMedia({show, onUploaded}) {
 
     const [file,setFile] = useState()
     const [feedback, setFeedback] = useState('')
+    const fileInput = useRef(null)
 
     const uploadFile = async () => {
         if (file == null || file == undefined) {
@@ -29,6 +30,8 @@ export default function UploadMedia({show}) {
             if (status == 200) {
                 setFeedback('Upload successful!')
                 setFile(null)
+                if (fileInput.current) fileInput.current.value = ''
+                if (onUploaded) onUploaded()
             } else {
                 setFeedback('Upload failed')
             }
@@ -42,7 +45,7 @@ export default function UploadMedia({show}) {
             {
                 show ?
                 <>
-                    <input type="file" onChange={(e) => {setFile(e.target.files[0])}} />
+                    <input ref={fileInput} type="file" onChange={(e) => {setFile(e.target.files[0])}} />
                     <button onClick={uploadFile}>Upload</button>
                     {feedback && <p>{feedback}</p>}
                 </>

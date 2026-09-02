@@ -9,35 +9,48 @@ export default function Console() {
 
     const [password,setPassword] = useState('')
     const [authed,setAuthed] = useState(false)
-    const [showNewPost, setShowNewPost] = useState(false)
-    const [showManagePosts, setShowManagePosts] = useState(false)
-    const [showUploadMedia,setShowUploadMedia] = useState(false)
-    const [showManageMedia,setShowManageMedia] = useState(false)
+    const [activeTab, setActiveTab] = useState('new-post')
+    const [authMessage, setAuthMessage] = useState('Awaiting Authentication')
+    const [mediaRefreshKey, setMediaRefreshKey] = useState(0)
 
     const authenticate = async () => {
-        const response = await fetch(SERVER_URL+'/auth',{
-            method:'POST',
-            headers:{'content-type':'application/json'},
-            body:JSON.stringify({
-                'password':password
+        try {
+            const response = await fetch(SERVER_URL+'/auth',{
+                method:'POST',
+                headers:{'content-type':'application/json'},
+                body:JSON.stringify({
+                    'password':password
+                })
             })
-        })
-        const status = response.status
-
-        console.log(status)
-
-        if (status === 200) {
+            if (!response.ok) {
+                throw new Error('Authentication failed')
+            }
             setAuthed(true)
+            setAuthMessage('Authentication Successful')
             sessionStorage.setItem('password',password)
-        } else {
+        } catch (err) {
             setAuthed(false)
+            setAuthMessage(err.message)
         }
-
     }
 
     useEffect(() => {
-        if (sessionStorage.getItem('password') != undefined) {
-            setAuthed(true)
+        const storedPassword = sessionStorage.getItem('password')
+        if (storedPassword) {
+            fetch(SERVER_URL+'/auth',{
+                method:'POST',
+                headers:{'content-type':'application/json'},
+                body:JSON.stringify({'password':storedPassword})
+            }).then((response) => {
+                if (response.ok) {
+                    setAuthed(true)
+                    setAuthMessage('Authentication Successful')
+                } else {
+                    sessionStorage.removeItem('password')
+                }
+            }).catch(() => {
+                sessionStorage.removeItem('password')
+            })
         }
     },[])
 
@@ -45,32 +58,68 @@ export default function Console() {
         <div className="Console">
             <h1>Console</h1>
             <div className="password-container">
-                <input type="text" placeholder="Password" onChange={(e) => {setPassword(e.target.value)}}></input>
+                <input type="password" placeholder="Password" value={password} onChange={(e) => {setPassword(e.target.value)}}></input>
                 <footer>
                     <button onClick={() => authenticate()}>Authenticate</button>
 
                     <h3>
-                    {authed ? 
-                    'Authentication Successful' : 'Awaiting Authentication'}
+                    {authMessage}
                     </h3>
                 </footer>
 
             </div>
-            <div className="new-post-container">
-                <button onClick={() => {setShowNewPost(!showNewPost)}}>New Post</button>
-                <NewPost show={showNewPost}/>
+            <div className="console-tabs" role="tablist" aria-label="Console actions">
+                <button
+                    className={activeTab === 'new-post' ? 'active' : ''}
+                    role="tab"
+                    aria-selected={activeTab === 'new-post'}
+                    onClick={() => setActiveTab('new-post')}
+                >
+                    New Post
+                </button>
+                <button
+                    className={activeTab === 'manage-posts' ? 'active' : ''}
+                    role="tab"
+                    aria-selected={activeTab === 'manage-posts'}
+                    onClick={() => setActiveTab('manage-posts')}
+                >
+                    Manage Posts
+                </button>
+                <button
+                    className={activeTab === 'upload-media' ? 'active' : ''}
+                    role="tab"
+                    aria-selected={activeTab === 'upload-media'}
+                    onClick={() => setActiveTab('upload-media')}
+                >
+                    Upload Media
+                </button>
+                <button
+                    className={activeTab === 'manage-media' ? 'active' : ''}
+                    role="tab"
+                    aria-selected={activeTab === 'manage-media'}
+                    onClick={() => setActiveTab('manage-media')}
+                >
+                    Manage Media
+                </button>
             </div>
-            <div className="manage-posts-container">
-                <button  onClick={() => {setShowManagePosts(!showManagePosts)}}>Manage Posts</button>
-                <ManagePosts show={showManagePosts} />
-            </div>
-            <div className="upload-media">
-                <button onClick={() => {setShowUploadMedia(!showUploadMedia)}}>Upload Media</button>
-                <UploadMedia show={showUploadMedia}/>
-            </div>
-            <div className="manage-media">
-                <button onClick={() => {setShowManageMedia(!showManageMedia)}}>Manage Media</button>
-                <ManageMedia show={showManageMedia} />
+            <div className="console-panel" role="tabpanel">
+                {!authed ? (
+                    <p className="console-locked">Authenticate to manage posts and media.</p>
+                ) : (
+                    <>
+                        {activeTab === 'new-post' && <NewPost show={true}/>}
+                        {activeTab === 'manage-posts' && <ManagePosts show={true}/>}
+                        {activeTab === 'upload-media' && (
+                            <UploadMedia
+                                show={true}
+                                onUploaded={() => setMediaRefreshKey((key) => key + 1)}
+                            />
+                        )}
+                        {activeTab === 'manage-media' && (
+                            <ManageMedia show={true} refreshKey={mediaRefreshKey}/>
+                        )}
+                    </>
+                )}
             </div>
         </div>
     )
