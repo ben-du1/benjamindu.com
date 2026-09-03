@@ -10,8 +10,7 @@ const db = new sqlite3.Database(path.join(__dirname,'benjamindu.sql'))
 const HTTP_PORT = 4000
 const HTTPS_PORT = 443
 const UPLOAD_DIR = path.join(__dirname,'media')
-const BUILD_DIR = path.join(__dirname,'build')
-const PASSWORD_KEY = "skibidi"
+const PASSWORD_KEY = "NOT_THE_PASSWORD"
 const USE_HTTPS = false;
 
 const {authInit,authCheck} = require('./helpers/auth.js')
@@ -29,7 +28,7 @@ const app = express()
 
 app.use(express.json())
 app.use(cors())
-app.use(express.static(BUILD_DIR))
+// app.use(express.static(BUILD_DIR))
 
 app.post('/api/auth',(req,res) => {
     authInit(req.body.password,PASSWORD_KEY,res)
@@ -94,11 +93,6 @@ app.post('/api/deletefile',(req,res) => {
     }
 })
 
-// Let the client-side router handle URLs that are not API or media routes.
-app.get(/.*/, (req,res) => {
-    res.sendFile(path.join(BUILD_DIR,'index.html'))
-})
-
 function startServer() {
     if (USE_HTTPS) {
         const privateKey = fs.readFileSync('/etc/letsencrypt/live/benjamindu.com/privkey.pem', 'utf8')
@@ -110,7 +104,7 @@ function startServer() {
             console.log("benjamindu.com-v5 HTTPS server running on port "+HTTPS_PORT)
         })
     } else {
-        app.listen(HTTP_PORT,"0.0.0.0",() => {
+        app.listen(HTTP_PORT,() => {
             console.log("benjamindu.com-v5 HTTP server running on port "+HTTP_PORT)
         })
     }
