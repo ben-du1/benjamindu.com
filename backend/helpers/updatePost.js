@@ -1,3 +1,5 @@
+const {serializeKeywords} = require('./keywords.js')
+
 function slugify(value) {
     return String(value ?? '')
         .normalize('NFD')
@@ -8,9 +10,10 @@ function slugify(value) {
         .replace(/^-+|-+$/g, '') || 'post'
 }
 
-function updatePost(db, id, title,description,date,content,image,requestedSlug,category,res) {
+function updatePost(db, id, title,description,date,content,image,requestedSlug,category,keywords,res) {
     const slug = slugify(requestedSlug || title)
     const postCategory = category === 'fun' ? 'fun' : 'serious'
+    const postKeywords = serializeKeywords(keywords)
 
     db.serialize(() => {
         db.all("SELECT id,slug,title FROM posts WHERE id<>?", id, (lookupError, posts) => {
@@ -23,8 +26,8 @@ function updatePost(db, id, title,description,date,content,image,requestedSlug,c
                 return res.status(409).send('Slug is already in use')
             }
 
-            const stmt = db.prepare("UPDATE posts SET title=?, description=?, date=?, content=?, image=?, slug=?, category=? WHERE id=?")
-            stmt.run(title,description,date,content,image,slug,postCategory,id,(err) => {
+            const stmt = db.prepare("UPDATE posts SET title=?, description=?, date=?, content=?, image=?, slug=?, category=?, keywords=? WHERE id=?")
+            stmt.run(title,description,date,content,image,slug,postCategory,postKeywords,id,(err) => {
                 if (err) {
                     console.log(err)
                     return stmt.finalize(() => res.sendStatus(500))

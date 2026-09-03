@@ -52,7 +52,7 @@ export default function PostList() {
                 </div>
             </div>
            {posts.filter((post) => (post.category || 'serious') === (showFun ? 'fun' : 'serious')).map((post) => (
-            <Container key={post.id} title={post.title} description={post.description} date={post.date} postId={post.id} slug={post.slug} image={post.image}/>
+            <Container key={post.id} title={post.title} description={post.description} date={post.date} postId={post.id} slug={post.slug} image={post.image} keywords={Array.isArray(post.keywords) ? post.keywords : []}/>
            ))}
         </div>
     )

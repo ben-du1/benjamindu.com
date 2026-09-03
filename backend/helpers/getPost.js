@@ -1,3 +1,5 @@
+const {normalizeKeywords} = require('./keywords.js')
+
 function slugify(value) {
     return String(value ?? '')
         .normalize('NFD')
@@ -11,7 +13,8 @@ function slugify(value) {
 function withSlug(row) {
     return {
         ...row,
-        slug: row.slug || slugify(row.title)
+        slug: row.slug || slugify(row.title),
+        keywords: normalizeKeywords(row.keywords)
     }
 }
 

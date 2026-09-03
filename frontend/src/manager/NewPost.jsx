@@ -9,6 +9,7 @@ export default function NewPost({show, onCreated}) {
     const [content,setContent] = useState('')
     const [image,setImage] = useState('')
     const [category,setCategory] = useState('serious')
+    const [keywords,setKeywords] = useState('')
     const [feedback, setFeedback] = useState('')
     const [saving, setSaving] = useState(false)
 
@@ -27,6 +28,7 @@ export default function NewPost({show, onCreated}) {
                     "content":content,
                     "image":image
                     ,"category":category
+                    ,"keywords":keywords.split(',').map((keyword) => keyword.trim()).filter(Boolean)
                 })
             })
             if (!response.ok) {
@@ -38,6 +40,7 @@ export default function NewPost({show, onCreated}) {
             setContent('')
             setImage('')
             setCategory('serious')
+            setKeywords('')
             setFeedback('Post created successfully')
             if (onCreated) onCreated()
         } catch (err) {
@@ -60,6 +63,7 @@ export default function NewPost({show, onCreated}) {
                         <option value="serious">Serious</option>
                         <option value="fun">Fun</option>
                     </select> <br/>
+                    <input type="text" placeholder="Keywords (comma-separated)" value={keywords} onChange={(e) => setKeywords(e.target.value)}></input> <br/>
                     <textarea type="text" placeholder="Content (Markdown)" value={content} onChange={(e) => setContent(e.target.value)}></textarea> <br/>
                     <button disabled={saving} onClick={createPost}>{saving ? 'Creating...' : 'Create'}</button>
                     {feedback && <p className="console-feedback">{feedback}</p>}

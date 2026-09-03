@@ -1,6 +1,6 @@
 import { Link } from "react-router"
 
-export default function Container({title,description,date,postId,slug,image}) {
+export default function Container({title,description,date,postId,slug,image,keywords = []}) {
     const postSlug = slug || postId
 
     return (
@@ -13,6 +13,11 @@ export default function Container({title,description,date,postId,slug,image}) {
                 <h1>{title}</h1>
                 <h2>{description}</h2>
                 <h3>{date}</h3>
+                {keywords.length > 0 && (
+                    <div className="post-keywords" aria-label="Keywords">
+                        {keywords.map((keyword) => <span key={keyword}>{keyword}</span>)}
+                    </div>
+                )}
             </header>
         </div>
         </Link>

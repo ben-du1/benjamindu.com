@@ -271,7 +271,7 @@ select {
 .Container h3,
 .Post h3 {
   margin:0;
-  color:var(--color-text-subtle)
+  color:var(--color-text-muted);
 }
 
 .Container header {
@@ -283,6 +283,22 @@ select {
 .Container header h3 {
   color:var(--color-accent-light);
 
+}
+
+.post-keywords {
+  display:flex;
+  flex-wrap:wrap;
+  gap:0.4rem;
+  margin-top:0.6rem;
+}
+
+.post-keywords span {
+  border:1.5px solid var(--color-border);
+  border-radius:999px;
+  color:var(--color-text);
+  font-size:0.8rem;
+  padding:0.2rem 0.5rem;
+  font-weight:400;
 }
 
 .Container img {
@@ -312,6 +328,31 @@ select {
 }
 
 .Post header h3 {
+  color:var(--color-accent-light);
+}
+
+.Post header h2 {
+  font-style:italic;
+}
+
+.Post-meta {
+  display:flex;
+  align-items:center;
+  gap:0.75rem;
+  color:var(--color-text-subtle);
+  font-size:0.9rem;
+}
+
+.Post-meta button {
+  display:inline-flex;
+  align-items:center;
+  gap:0.4rem;
+  padding:0.35rem 0.6rem;
+  font-size:0.9rem;
+}
+
+.Post-share-feedback {
+  font-weight:600;
   color:var(--color-accent-light);
 }
 
@@ -675,6 +716,7 @@ select {
 .About .keyword {
   color:var(--color-accent);
   font-style:italic;
+  text-decoration: underline;
 }
 
 .About .about-content * {
@@ -823,6 +865,7 @@ select {
 
   .Nav h1 {
     font-size:3rem;
+    text-shadow:0px 0.3rem var(--color-shadow-highlight);
   }
 
   .Nav i {
@@ -871,6 +914,10 @@ select {
 
   .Post {
     width:100%;
+  }
+
+  .Post-meta {
+    flex-wrap:wrap;
   }
 
   .Console {

@@ -24,70 +24,71 @@ const upload = require('./helpers/upload.js')
 const serveFile = require("./helpers/serveFile.js")
 const getFiles = require('./helpers/getFiles.js')
 const deleteFile = require('./helpers/deleteFile.js')
+const migrateDatabase = require('./migrate.js')
 const app = express()
 
 app.use(express.json())
 app.use(cors())
 app.use(express.static(BUILD_DIR))
 
-app.post('/auth',(req,res) => {
+app.post('/api/auth',(req,res) => {
     authInit(req.body.password,PASSWORD_KEY,res)
 })
 
-app.get('/post/:slug', (req,res) => {
+app.get('/api/post/:slug', (req,res) => {
     getPost(db, req.params.slug, res)
 })
 
-app.get('/post',(req,res) => {
+app.get('/api/post',(req,res) => {
     getPost(db, req.query.id ?? req.query.slug, res)
 })
 
-app.get('/posts',(req,res) => {
+app.get('/api/posts',(req,res) => {
     getPost(db,-1,res)
 })
 
-app.post('/delete',(req,res) => {
+app.post('/api/delete',(req,res) => {
     if (authCheck(req.body.password,PASSWORD_KEY,res)) {
         deletePost(db,req.body.id,res)
     }
 })
 
-app.post('/reorderposts',(req,res) => {
+app.post('/api/reorderposts',(req,res) => {
     if (authCheck(req.body.password,PASSWORD_KEY,res)) {
         reorderPosts(db, req.body.ids, res)
     }
 })
 
-app.post('/createpost',(req,res) => {
+app.post('/api/createpost',(req,res) => {
     if (authCheck(req.body.password,PASSWORD_KEY,res)) {
-        createPost(db,req.body.title,req.body.description,req.body.date,req.body.content,req.body.image,req.body.category,res)
+        createPost(db,req.body.title,req.body.description,req.body.date,req.body.content,req.body.image,req.body.category,req.body.keywords,res)
     }
 })
 
-app.post('/updatepost',(req,res) => {
+app.post('/api/updatepost',(req,res) => {
     if (authCheck(req.body.password,PASSWORD_KEY,res)) {
-        updatePost(db,req.body.id,req.body.title,req.body.description,req.body.date,req.body.content,req.body.image,req.body.slug,req.body.category,res)
+        updatePost(db,req.body.id,req.body.title,req.body.description,req.body.date,req.body.content,req.body.image,req.body.slug,req.body.category,req.body.keywords,res)
     } 
 })
 
-app.post('/upload',(req,res) => {
+app.post('/api/upload',(req,res) => {
     // auth handled in upload
     upload(req,UPLOAD_DIR,PASSWORD_KEY,res)
 
 })
 
-app.get('/file/:name',(req,res) => {
+app.get('/api/file/:name',(req,res) => {
     serveFile(req,UPLOAD_DIR,res)
 })
 
-app.post('/files',(req,res) => {
+app.post('/api/files',(req,res) => {
     if (authCheck(req.body.password,PASSWORD_KEY,res)) {
         getFiles(req,UPLOAD_DIR,res)
     }
     
 })
 
-app.post('/deletefile',(req,res) => {
+app.post('/api/deletefile',(req,res) => {
     if (authCheck(req.body.password,PASSWORD_KEY,res)) {
         deleteFile(req.body.fileName,UPLOAD_DIR,res)
     }
@@ -109,22 +110,17 @@ function startServer() {
             console.log("benjamindu.com-v5 HTTPS server running on port "+HTTPS_PORT)
         })
     } else {
-        app.listen(HTTP_PORT,() => {
+        app.listen(HTTP_PORT,"0.0.0.0",() => {
             console.log("benjamindu.com-v5 HTTP server running on port "+HTTP_PORT)
         })
     }
 }
 
 // Complete schema migration before opening the HTTP listener.
-db.run("ALTER TABLE posts ADD COLUMN category TEXT NOT NULL DEFAULT 'serious'", (err) => {
-    if (err && !err.message.includes('duplicate column name')) {
-        console.log(err)
+migrateDatabase(db, (migrationError) => {
+    if (migrationError) {
+        console.error('Database migration failed:', migrationError)
+        return
     }
-    db.run("UPDATE posts SET category='serious' WHERE category IS NULL OR category NOT IN ('serious','fun')", (updateError) => {
-        if (updateError) console.log(updateError)
-        db.run("CREATE UNIQUE INDEX IF NOT EXISTS posts_slug_unique ON posts(slug) WHERE slug IS NOT NULL AND slug <> ''", (indexError) => {
-            if (indexError) console.log(indexError)
-            startServer()
-        })
-    })
+    startServer()
 })

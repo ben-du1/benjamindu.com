@@ -36,7 +36,7 @@ export default function Nav() {
                 if (!logoHovered.current) {
                     stopLogoAnimation()
                 }
-            }, 350)
+            }, 250)
         }
     }
 
@@ -54,7 +54,7 @@ export default function Nav() {
             if (Math.random() < 0.2) {
                 startLogoAnimation(true)
             }
-        }, 1000)
+        }, 500)
 
         return () => {
             clearInterval(randomGlitch)

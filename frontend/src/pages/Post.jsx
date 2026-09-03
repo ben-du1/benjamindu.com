@@ -1,15 +1,13 @@
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import remarkBreaks from "remark-breaks";
-import remarkMath from "remark-math";
 import rehypeRaw from "rehype-raw";
 import rehypeSanitize from "rehype-sanitize";
-import rehypeKatex from "rehype-katex";
 import rehypeHighlight from "rehype-highlight";
 import { useParams } from "react-router";
 import { useEffect,useState } from "react";
+import { FaShareAlt } from "react-icons/fa";
 import SERVER_URL from "../lib/SERVER_URL";
-import "katex/dist/katex.min.css";
 import "highlight.js/styles/github-dark.css";
 
 export default function Post () {
@@ -22,6 +20,33 @@ export default function Post () {
     const [content,setContent] = useState('')
     const [error, setError] = useState(null)
     const [loading,setLoading] = useState(true)
+    const [shareFeedback,setShareFeedback] = useState('')
+
+    const wordCount = content.trim() ? content.trim().split(/\s+/).length : 0
+    const readingMinutes = Math.max(1, Math.ceil(wordCount / 200))
+
+    const sharePost = async () => {
+        setShareFeedback('')
+        const shareData = {
+            title: title || 'Ben Du',
+            text: description || title || '',
+            url: window.location.href
+        }
+
+        try {
+            if (navigator.share) {
+                await navigator.share(shareData)
+                setShareFeedback('Shared')
+            } else {
+                await navigator.clipboard.writeText(shareData.url)
+                setShareFeedback('Link copied!')
+            }
+        } catch (err) {
+            if (err.name !== 'AbortError') {
+                setShareFeedback('Unable to share')
+            }
+        }
+    }
 
     useEffect(() => {
         const controller = new AbortController()
@@ -40,6 +65,7 @@ export default function Post () {
         setDate(undefined)
         setContent('')
         setImage(undefined)
+        setShareFeedback('')
 
         fetch(SERVER_URL+'/post/' + encodeURIComponent(postSlug), {signal:controller.signal})
             .then((response) => {
@@ -81,18 +107,26 @@ export default function Post () {
         <div className="Post">
             <header>
                 <h1>{title}</h1>
+                <br/>
                 <h2>{description}</h2>
                 <h3>{date}</h3>
             </header>
+            <div className="Post-meta">
+                <span>{readingMinutes} min read</span>
+                <button type="button" onClick={sharePost} aria-label="Share this post">
+                    <FaShareAlt aria-hidden="true" />
+                    <span>Share</span>
+                </button>
+                {shareFeedback && <span className="Post-share-feedback" role="status">{shareFeedback}</span>}
+            </div>
             <img src={image} alt={title || 'Post image'} />
             <div className='markdown'>
 
             <Markdown
-                remarkPlugins={[remarkGfm, remarkBreaks, remarkMath]}
+                remarkPlugins={[remarkGfm, remarkBreaks]}
                 rehypePlugins={[
                     rehypeRaw,
                     rehypeSanitize,
-                    rehypeKatex,
                     rehypeHighlight
                 ]}
             >

@@ -1,3 +1,5 @@
+const {serializeKeywords} = require('./keywords.js')
+
 function slugify(value) {
     return String(value ?? '')
         .normalize('NFD')
@@ -8,9 +10,10 @@ function slugify(value) {
         .replace(/^-+|-+$/g, '') || 'post'
 }
 
-function createPost(db, title,description,date,content,image,category,res) {
+function createPost(db, title,description,date,content,image,category,keywords,res) {
     const slug = slugify(title)
     const postCategory = category === 'fun' ? 'fun' : 'serious'
+    const postKeywords = serializeKeywords(keywords)
 
     db.serialize(() => {
         db.all("SELECT slug,title FROM posts", (slugError, rows) => {
@@ -32,8 +35,8 @@ function createPost(db, title,description,date,content,image,category,res) {
                 return res.sendStatus(500)
             }
 
-            const stmt = db.prepare("INSERT INTO posts (title,description,date,content,image,slug,display_order,category) VALUES (?,?,?,?,?,?,?,?)")
-            stmt.run(title,description,date,content,image,slug,row.next_order,postCategory,(err) => {
+            const stmt = db.prepare("INSERT INTO posts (title,description,date,content,image,slug,display_order,category,keywords) VALUES (?,?,?,?,?,?,?,?,?)")
+            stmt.run(title,description,date,content,image,slug,row.next_order,postCategory,postKeywords,(err) => {
                 if (err) {
                     console.log(err)
                     return stmt.finalize(() => res.sendStatus(500))

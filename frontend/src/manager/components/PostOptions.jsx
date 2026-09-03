@@ -9,6 +9,7 @@ export default function PostOptions({reloadPosts,post,canMoveUp,canMoveDown,canR
     const [content,setContent] = useState(post.content)
     const [image,setImage] = useState(post.image)
     const [category,setCategory] = useState(post.category || 'serious')
+    const [keywords,setKeywords] = useState((post.keywords || []).join(', '))
     const [showMore,setShowMore] = useState(false)
     const [saving,setSaving] = useState(false)
     const [feedback,setFeedback] = useState('')
@@ -31,6 +32,7 @@ export default function PostOptions({reloadPosts,post,canMoveUp,canMoveDown,canR
                     "content":content,
                     "image":image
                     ,"category":category
+                    ,"keywords":keywords.split(',').map((keyword) => keyword.trim()).filter(Boolean)
                 })
             })
 
@@ -94,6 +96,7 @@ export default function PostOptions({reloadPosts,post,canMoveUp,canMoveDown,canR
                     <option value="serious">Serious</option>
                     <option value="fun">Fun</option>
                 </select> <br/>
+                <input type="text" value={keywords} placeholder="Keywords (comma-separated)" onChange={(e) => setKeywords(e.target.value)}></input> <br/>
                 <textarea type="text" value={content} placeholder="Content (Markdown)" onChange={(e) => setContent(e.target.value)}></textarea> <br/>
                 <button disabled={saving} onClick={updatePost}>{saving ? 'Saving...' : 'Save'}</button>
                 {feedback && <p className="console-feedback">{feedback}</p>}
