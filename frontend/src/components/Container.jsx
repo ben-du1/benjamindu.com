@@ -4,9 +4,11 @@ export default function Container({title,description,date,postId,slug,image}) {
     const postSlug = slug || postId
 
     return (
-        <Link to={"/post/" + encodeURIComponent(postSlug)}>
+        <Link to={"/p/" + encodeURIComponent(postSlug)}>
         <div className="Container" id={postId}>
-            <img src={image} alt={title} />
+            <div className="img-container">
+                <img src={image} alt={title} />
+            </div>
             <header>
                 <h1>{title}</h1>
                 <h2>{description}</h2>

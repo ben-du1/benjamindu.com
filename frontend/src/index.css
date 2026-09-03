@@ -1,54 +1,71 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto:ital,wdth,wght@0,75..100,100..900;1,75..100,100..900&display=swap');
 
+/* OLD STYLES DO NOT DELETE */
+/* :root {
+  --color-background: rgb(30, 31, 32);
+  --color-surface: rgb(35, 36, 37);
+  --color-border: rgb(83, 83, 83);
+  --color-shadow-highlight: rgb(125, 125, 125);
+  --color-text: white;
+  --color-text-muted: lightgray;
+  --color-text-subtle: rgb(141, 141, 141);
+  --color-accent: mediumorchid;
+  --color-accent-light: orchid;
+} */
 
-/*
-superdark: rgb(30, 31, 32);
-dark: rgb(83, 83, 83);
-container: rgb(35, 36, 37);
-accent: #DAA520 'GoldenRod
+:root {
+  --color-background: rgb(16, 16, 16);
+  --color-surface: rgb(16, 16, 16);
+  --color-border: rgb(58, 58, 58);
+  --color-shadow-highlight: rgb(125, 125, 125);
+  --color-text: white;
+  --color-text-muted: rgb(174, 174, 174);
+  --color-text-subtle: rgb(141, 141, 141);
+  --color-accent: mediumorchid;
+  --color-accent-light: mediumorchid;
+}
 
-
-*/
-
-
+/* Base styles */
 body {
-  background-color:rgb(30, 31, 32);
-  font-family: 'Roboto';
+  background-color:var(--color-background);
+  font-family:'Roboto';
   margin-left:0;
 }
 
 a {
   text-decoration: none;
-  color:mediumorchid;
+  color:var(--color-accent);
 }
 
 a:visited {
-  color:mediumorchid;
+  color:var(--color-accent);
 }
 
 button {
-  background-color:rgb(35, 36, 37);
-  border:1px solid rgb(83, 83, 83) ;
+  background-color:var(--color-surface);
+  border:1px solid var(--color-border) ;
   border-radius:5px;
   padding:0.5rem;
-  color:white;
+  color:var(--color-text);
   font-weight:700;
   transition-duration: 500ms;
 }
 
 button:hover {
-  background-color: rgb(83, 83, 83);
+  background-color:var(--color-border);
 }
 
-input[type="text"], input[type="password"], textarea {
+input[type="text"],
+input[type="password"],
+textarea {
   border-radius:5px;
-  background-color:rgb(35, 36, 37);
-  border:1px solid rgb(83, 83, 83) ;
+  background-color:var(--color-surface);
+  border:1px solid var(--color-border) ;
   padding:0.5rem;
-  color:white;
+  color:var(--color-text);
 }
 
-
+/* Site layout */
 .App {
   width:50rem;
   margin:auto;
@@ -62,28 +79,58 @@ input[type="text"], input[type="password"], textarea {
 
 .Nav {
   margin-bottom: 2rem;
+  padding-top:0.5rem;
   display:flex;
   align-items:baseline;
   gap:3rem;
 }
 
 .Nav h1 {
-  color:white;
+  display:flex;
+  align-items:center;
+  color:var(--color-text);
   margin:0;
   font-size:4rem;
-  text-shadow: 0px 0.4rem rgb(125, 125, 125);
+  line-height:1;
+  text-shadow:0px 0.4rem var(--color-shadow-highlight);
+}
 
-  
+.Nav h1 .logo-name {
+  position:relative;
+  display:inline-block;
+  height:1em;
+  line-height:1em;
+  overflow:hidden;
+  white-space:nowrap;
+}
+
+.Nav h1 .logo-name-base {
+  display:block;
+}
+
+.Nav h1 .logo-name-glitch {
+  position:absolute;
+  top:0;
+  left:0;
+  visibility:hidden;
+}
+
+.Nav h1 .logo-name.glitching .logo-name-base {
+  visibility:hidden;
+}
+
+.Nav h1 .logo-name.glitching .logo-name-glitch {
+  visibility:visible;
 }
 
 .Nav h1 b {
-  color:mediumorchid;
+  color:var(--color-accent);
   font-size:3.5rem;
   text-shadow:none;
 }
 
 .Nav h2 b {
-  color:mediumorchid;
+  color:var(--color-accent);
   font-size:2.5rem;
   padding-right:0.25rem;
   text-shadow:none;
@@ -95,13 +142,14 @@ input[type="text"], input[type="password"], textarea {
   height:fit-content;
   align-items:center;
   gap:1.5rem;
+  margin-left:auto;
 }
 
 .Nav li h2 {
   margin:0;
   font-size:2.5rem;
-  color: white;
-  text-shadow: 0px 0.3rem rgb(125, 125, 125);
+  color:var(--color-text);
+  text-shadow: 0px 0.3rem var(--color-shadow-highlight);
 }
 
 .Nav i {
@@ -115,117 +163,175 @@ input[type="text"], input[type="password"], textarea {
   gap:1rem;
 }
 
-.Container {
-  background-color:rgb(35, 36, 37);
+.Nav li .socials a {
+  display:flex;
+  align-items:center;
+  color:var(--color-accent);
+  transition:color 250ms ease-in-out;
+}
 
+.Nav li .socials a:hover {
+  color:var(--color-text);
+}
+
+.Footer {
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:1rem;
+  margin-top:2rem;
+  padding:1rem 0;
+  border-top:1px solid var(--color-border);
+  color:var(--color-text-subtle);
+  font-size:0.9rem;
+}
+
+.Footer a {
+  color:var(--color-text-subtle);
+}
+
+.Footer-socials a {
+  color:var(--color-text-subtle);
+  transition:color 250ms ease-in-out;
+}
+
+.Footer-socials a:hover {
+  color:var(--color-text);
+}
+
+.Footer-socials {
+  display:flex;
+  align-items:center;
+  gap:1rem;
+  margin:0;
+  padding:0;
+  border:0;
+  font-size:1.25rem;
+}
+
+.Footer-socials a {
+  display:flex;
+  align-items:center;
+}
+
+.Container {
+  background-color:var(--color-surface);
   display:flex;
   padding:1rem;
-  border:1px solid rgb(83, 83, 83);
+  box-sizing: border-box;
+  border:1.5px solid var(--color-border) ;
   border-radius:5px;
-  gap: 2rem;
-  align-items: center;
+  gap:2rem;
+  align-items:center;
   width:100%;
   margin-top:1rem;
   margin-bottom: 1rem;
-  transition: 250ms ease-in-out
+  transition:250ms ease-in-out;
 }
+
 
 .Container:hover {
-  /* box-shadow:5px 5px 15px 5px mediumorchid; */
-  border:1px solid mediumorchid;
+  border:1px solid var(--color-accent);
 }
 
-.Container h1, .Post h1 {
-  color: white;
+.Container h1,
+.Post h1 {
+  color:var(--color-text);
   margin:0;
 }
 
-.Container h2, .Post h2 {
-  color : lightgray;
+.Container h2,
+.Post h2 {
+  color:var(--color-text-muted);
   margin:0;
 }
 
-.Container h3, .Post h3 {
+.Container h3,
+.Post h3 {
   margin:0;
-  color:rgb(141, 141, 141)
+  color:var(--color-text-subtle)
 }
 
 .Container header {
   display:flex;
-  flex-direction: column;
+  flex-direction:column;
   height:fit-content;
 }
 
-
 .Container header h3 {
-  color:orchid;
+  color:var(--color-accent-light);
 
 }
 
 .Container img {
-  width: 10rem;
-  border-radius: 5px;
+  width:10rem;
+  border-radius:5px;
 }
 
+/* Post page */
 .Post {
-  padding:1rem;
-  border:1px solid rgb(83, 83, 83);
-  background-color:rgb(35, 36, 37);
+  padding:2rem;
+  box-sizing: border-box;
+  border:1px solid var(--color-border);
 
+  background-color:var(--color-surface);
   border-radius:5px;
   width:100%;
 }
 
 .Post .markdown {
-  color:white;
+  color:var(--color-text);
 }
 
-.Post header{
+.Post header {
   margin-bottom:1rem;
 }
 
 .Post header h3 {
-  color:orchid;
+  color:var(--color-accent-light);
 }
 
 
 .Post img {
-  width:80%;
+  width:100%;
   margin-top:1rem;
   margin-bottom:1rem;
   border-radius:5px;
 }
 
 .Post .markdown img {
-  width: 80%;
+  width: 100%;
 }
 
-.Post .markdown td,th {
-  border:1px solid white;
+.Post .markdown td,
+.Post .markdown th {
+  border:1px solid var(--color-text);
   padding:0.5rem;
 }
 
 .Post .markdown table {
-  border-collapse: collapse;
+  border-collapse:collapse;
 }
 
 .Post .markdown a {
-  color:orchid;
+  color:var(--color-accent-light);
   text-decoration: underline;
 }
 
+/* Console */
 .Console {
-  background-color:rgb(35, 36, 37);
+  background-color:var(--color-surface);
   padding:1.5rem;
-  border:1px solid rgb(83, 83, 83);
+  border:1px solid var(--color-border);
   border-radius:5px;
   display:flex;
-  flex-direction: column;
+  flex-direction:column;
   gap:1rem;
-  box-shadow:0px 0.4rem 0px rgb(20, 21, 22);
 }
 
-.Console input[type="text"], .Console input[type="password"], textarea{
+.Console input[type="text"],
+.Console input[type="password"],
+textarea {
   box-sizing:border-box;
   margin-top:0.5rem;
   margin-bottom:0.5rem;
@@ -237,18 +343,21 @@ input[type="text"], input[type="password"], textarea {
 }
 
 .Console h1 {
-  color:white;
+  color:var(--color-text);
   margin:0 0 0.5rem 0;
   font-size:2.5rem;
-  text-shadow:0px 0.25rem rgb(125, 125, 125);
 }
 
-.ManagePosts, .ManageMedia, .NewPost, .UploadMedia, .password-container {
+.ManagePosts,
+.ManageMedia,
+.NewPost,
+.UploadMedia,
+.password-container {
   margin:0;
   padding:1rem;
-  border:1px solid rgb(83, 83, 83);
+  border:1px solid var(--color-border);
   border-radius:5px;
-  background-color:rgb(30, 31, 32);
+  background-color:var(--color-background);
 }
 
 .Console .new-post-container,
@@ -264,36 +373,36 @@ input[type="text"], input[type="password"], textarea {
   display:flex;
   gap:0.5rem;
   padding:0.5rem;
-  background-color:rgb(30, 31, 32);
-  border:1px solid rgb(83, 83, 83);
+  background-color:var(--color-background);
+  border:1px solid var(--color-border);
   border-radius:5px;
   overflow-x:auto;
 }
 
 .Console .console-tabs button {
   flex:1 0 auto;
-  border-color:rgb(83, 83, 83);
-  color:rgb(141, 141, 141);
+  border-color:var(--color-border);
+  color:var(--color-text-subtle);
   white-space:nowrap;
 }
 
 .Console .console-tabs button.active {
-  background-color:rgb(83, 83, 83);
-  color:white;
+  background-color:var(--color-border);
+  color:var(--color-text);
 }
 
 .Console .console-panel {
   min-height:20rem;
   padding:1rem;
-  background-color:rgb(30, 31, 32);
-  border:1px solid rgb(83, 83, 83);
+  background-color:var(--color-background);
+  border:1px solid var(--color-border);
   border-radius:5px;
 }
 
 .Console .console-locked,
 .Console .console-feedback,
 .Console .media-feedback {
-  color:rgb(141, 141, 141);
+  color:var(--color-text-subtle);
   margin:0.75rem 0;
 }
 
@@ -308,19 +417,19 @@ input[type="text"], input[type="password"], textarea {
 }
 
 .Console h3 {
-  color:white;
+  color:var(--color-text);
   margin:0;
 }
 
 .Console .password-container footer{
   display:flex;
   gap:1rem;
-  align-items: center;
+  align-items:center;
   flex-wrap:wrap;
 }
 
 .Console .password-container h3 {
-  color:rgb(141, 141, 141);
+  color:var(--color-text-subtle);
   font-size:0.95rem;
   font-weight:400;
 }
@@ -335,7 +444,7 @@ input[type="text"], input[type="password"], textarea {
 .Console > .upload-media > button,
 .Console > .manage-media > button {
   align-self:flex-start;
-  color:white;
+  color:var(--color-text);
 }
 
 .Console .NewPost,
@@ -363,8 +472,8 @@ input[type="text"], input[type="password"], textarea {
 }
 
 .Console .ManagePosts > div {
-  background-color:rgb(35, 36, 37);
-  border:1px solid rgb(83, 83, 83);
+  background-color:var(--color-surface);
+  border:1px solid var(--color-border);
   border-radius:5px;
   margin-bottom:0.75rem;
   padding:1rem;
@@ -380,7 +489,7 @@ input[type="text"], input[type="password"], textarea {
   gap:0.5rem;
   flex-wrap:wrap;
   padding-bottom:0.75rem;
-  border-bottom:1px solid rgb(83, 83, 83);
+  border-bottom:1px solid var(--color-border);
 }
 
 .Console .ManagePosts h3 > span:first-child {
@@ -409,11 +518,11 @@ input[type="text"], input[type="password"], textarea {
 .Console .UploadMedia input[type="file"] {
   width:100%;
   max-width:30rem;
-  color:lightgray;
+  color:var(--color-text-muted);
 }
 
 .Console .UploadMedia p {
-  color:rgb(141, 141, 141);
+  color:var(--color-text-subtle);
   margin:0.5rem 0 0 0;
 }
 
@@ -442,7 +551,7 @@ input[type="text"], input[type="password"], textarea {
   margin:0;
   padding:1rem;
   overflow-wrap:anywhere;
-  border-bottom:1px solid rgb(83, 83, 83);
+  border-bottom:1px solid var(--color-border);
   font-size:0.9rem;
   text-align:center;
 }
@@ -454,8 +563,8 @@ input[type="text"], input[type="password"], textarea {
   min-width:10rem;
   max-width:14rem;
   overflow:hidden;
-  background-color:rgb(35, 36, 37);
-  border:1px solid rgb(83, 83, 83);
+  background-color:var(--color-surface);
+  border:1px solid var(--color-border);
   border-radius:5px;
 }
 
@@ -463,15 +572,15 @@ input[type="text"], input[type="password"], textarea {
   display:flex;
   margin-top:auto;
   padding:0.5rem;
-  background-color:rgb(30, 31, 32);
-  border-top:1px solid rgb(83, 83, 83);
+  background-color:var(--color-background);
+  border-top:1px solid var(--color-border);
   justify-content:center;
   flex-wrap:wrap;
   gap:0.5rem;
 }
 
 .ManageMedia .Media footer a {
-  color:white;
+  color:var(--color-text);
 }
 
 .ManageMedia .Media footer button {
@@ -481,7 +590,68 @@ input[type="text"], input[type="password"], textarea {
 }
 
 .ManageMedia .Media footer button:hover {
-  background-color:rgb(83, 83, 83);
+  background-color:var(--color-border);
+}
+
+.PostList .Container h1 {
+  text-shadow:none;
+  font-size:1.75rem;
+}
+
+.PostList .Container h2 {
+  font-size:1.25rem;
+  font-style:italic;
+}
+
+.About {
+  background-color:var(--color-surface);
+  padding:1rem;
+  box-sizing: border-box;
+  border:1.5px solid var(--color-border) ;
+  border-radius:5px;
+  width:100%;
+  margin-top:1rem;
+  margin-bottom: 1rem;
+  display:flex;
+  gap:2rem;
+  padding-right:2rem;
+  align-items:center;
+}
+
+.About img {
+  width:20rem;
+  height:25rem;
+  object-fit: cover;
+  border-radius:5px;
+}
+
+.About .about-content h3 {
+  color:var(--color-text-muted);
+  font-style:italic;
+}
+
+.About .about-content {
+  color:white;
+  padding-right:1rem;
+}
+
+.About .keyword {
+  color:var(--color-accent);
+  font-style:italic;
+}
+
+.About .about-content * {
+  margin: 0;
+}
+
+.PostList {
+  padding-top:0.5rem;
+}
+
+.PostList h1 {
+  color:white;
+  text-shadow:0px 0.2rem var(--color-shadow-highlight);
+
 }
 
 @media (max-width: 600px) {
@@ -493,9 +663,8 @@ input[type="text"], input[type="password"], textarea {
   .ManageMedia .Media footer {
     gap:0.25rem;
   }
-}
 
-@media (max-width: 600px) {
+  /* Mobile layout */
   .App {
     max-width:90%;
     min-width:275px;
@@ -508,7 +677,8 @@ input[type="text"], input[type="password"], textarea {
   .Nav li {
     /* display:none; */
     flex-basis:100;
-    border-left:1px solid rgb(83, 83, 83);
+    margin-left:0;
+    border-left:1px solid var(--color-border);
     padding-left:1rem;
     flex: 1 0 50%;
   }
@@ -538,9 +708,14 @@ input[type="text"], input[type="password"], textarea {
     flex-wrap:wrap;
   }
 
+  .Footer {
+    align-items:flex-start;
+    flex-direction:column;
+  }
+
   .Container {
     padding:1rem;
-    width:90%;
+    width:100%;
     flex-direction: column;
     align-items:baseline;
   }
@@ -557,7 +732,9 @@ input[type="text"], input[type="password"], textarea {
     padding:1rem;
   }
 
-  .Console input[type="text"], .Console input[type="password"], textarea {
+  .Console input[type="text"],
+  .Console input[type="password"],
+  textarea {
     width:100%;
   }
 
@@ -572,6 +749,11 @@ input[type="text"], input[type="password"], textarea {
 
   .Console .console-tabs button {
     padding:0.5rem 0.4rem;
+  }
+
+  .About {
+    flex-direction: column;
+    padding:1rem;
   }
 
 }

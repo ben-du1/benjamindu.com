@@ -36,6 +36,7 @@ export default function PostList() {
 
     return (
         <div className="PostList">
+            <h1>My Projects</h1>
            {posts.map((post) => (
             <Container key={post.id} title={post.title} description={post.description} date={post.date} postId={post.id} slug={post.slug} image={post.image}/>
            ))}

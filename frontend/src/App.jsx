@@ -3,6 +3,7 @@ import Home from './pages/Home';
 import Nav from './components/Nav';
 import Post from './pages/Post';
 import Console from './pages/Console';
+import Footer from './components/Footer';
 
 function App() {
   return (
@@ -10,9 +11,10 @@ function App() {
       <Nav />
       <Routes >
         <Route path="/" element={<Home />} />
-        <Route path="/post/:postSlug" element={<Post />} />
+        <Route path="/p/:postSlug" element={<Post />} />
         <Route path="/console" element={<Console />} />
       </Routes>
+      <Footer />
     </div>
   );
 }
