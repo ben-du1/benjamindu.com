@@ -7,6 +7,15 @@ export default function Media({fileName, onDeleted}) {
     const [deleting,setDeleting] = useState(false)
     const [feedback,setFeedback] = useState('')
 
+    const copyFileUrl = async () => {
+        try {
+            await navigator.clipboard.writeText(`${SERVER_URL}/file/${encodeURIComponent(fileName)}`)
+            setFeedback('URL copied')
+        } catch (error) {
+            setFeedback('Unable to copy URL')
+        }
+    }
+
     useEffect(() => {
         const fileType = fileName.split('.').at(-1).toLowerCase()
         setIsImage(['jpeg','png','jpg','svg','gif','webp'].includes(fileType))
@@ -40,13 +49,13 @@ export default function Media({fileName, onDeleted}) {
     return (
         <div className="Media" id={fileName}>
             {isImage ? 
-                <img src={`${SERVER_URL}/file/${fileName}`}/>
+                <img src={`${SERVER_URL}/file/${encodeURIComponent(fileName)}`} alt={fileName}/>
             :
                 <h3 className={isImage ? '' :'default'}>{fileName}</h3>
             }
             <footer>
-                <button onClick={() => navigator.clipboard.writeText(`${SERVER_URL}/file/${fileName}`)}>Copy</button>
-                <button><a href={`${SERVER_URL}/file/${fileName}`} target="_blank">View</a></button>
+                <button onClick={copyFileUrl}>Copy</button>
+                <button><a href={`${SERVER_URL}/file/${encodeURIComponent(fileName)}`} target="_blank" rel="noreferrer">View</a></button>
                 <button disabled={deleting} onClick={deleteMedia}>{deleting ? 'Deleting...' : 'Delete'}</button>
             </footer>
             {feedback && <p className="media-feedback">{feedback}</p>}

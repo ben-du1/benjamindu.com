@@ -86,15 +86,19 @@ export default function Nav() {
                 </h1>
             </Link>
             <i className={menuOpen ? "opened" : ''} onClick={() => setMenuOpen(!menuOpen)}><GiHamburgerMenu color="white" size={42}/></i>
-            <li >
+            <nav aria-label="Social links">
+            <ul>
+            <li>
                 {/* <h2><b>/</b>about</h2>
                 <Link to="/console"><h2><b>/</b>extras</h2></Link> */}
-                <div class="socials">
-                    <a target="_blank" href="https://github.com/ben-du1"><FaGithub size={35} /></a>
-                    <a target="_blank" href="https://linkedin.com/in/bingzhoudu"><FaLinkedin size={35} /></a>
-                    <a target="_blank" href="mailto:bennybob156@gmail.com"><IoIosMail size={49} /></a>
+                <div className="socials">
+                    <a target="_blank" rel="noreferrer" href="https://github.com/ben-du1"><FaGithub size={35} /></a>
+                    <a target="_blank" rel="noreferrer" href="https://linkedin.com/in/bingzhoudu"><FaLinkedin size={35} /></a>
+                    <a target="_blank" rel="noreferrer" href="mailto:bennybob156@gmail.com"><IoIosMail size={49} /></a>
                 </div>
             </li>
+            </ul>
+            </nav>
             
             <style>
                 {`

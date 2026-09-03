@@ -6,6 +6,7 @@ export default function PostList() {
 
     const [posts, setPosts] = useState([])
     const [error, setError] = useState(null)
+    const [showFun, setShowFun] = useState(false)
 
     const getPosts = async () => {
         try {
@@ -14,10 +15,14 @@ export default function PostList() {
                 throw new Error('Failed to fetch posts')
             }
             const data = await response.json()
-            if(data && data.length > 0) {
-                setPosts(data)
-                setError(null)
-            }
+            const normalizedPosts = Array.isArray(data)
+                ? data.filter((post) => post && typeof post === 'object').map((post) => ({
+                    ...post,
+                    category: post.category === 'fun' ? 'fun' : 'serious'
+                }))
+                : []
+            setPosts(normalizedPosts)
+            setError(null)
         } catch (err) {
             setError(err.message)
             console.error(err)
@@ -36,8 +41,17 @@ export default function PostList() {
 
     return (
         <div className="PostList">
-            <h1>My Projects</h1>
-           {posts.map((post) => (
+            <div className="project-list-header">
+                <h1>My Projects</h1>
+                <div className="project-filter">
+                    <span>Just For Fun <span className="project-filter-help" aria-hidden="true">(?)<span className="project-filter-tooltip" role="tooltip">Toggle for fun projects</span></span></span>
+                    <label className="project-switch">
+                        <input type="checkbox" checked={showFun} onChange={(e) => setShowFun(e.target.checked)} />
+                        <span className="project-slider" aria-hidden="true"></span>
+                    </label>
+                </div>
+            </div>
+           {posts.filter((post) => (post.category || 'serious') === (showFun ? 'fun' : 'serious')).map((post) => (
             <Container key={post.id} title={post.title} description={post.description} date={post.date} postId={post.id} slug={post.slug} image={post.image}/>
            ))}
         </div>

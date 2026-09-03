@@ -6,11 +6,11 @@ const http = require('http')
 const https = require("https")
 const fs = require('fs')
 
-const db = new sqlite3.Database('benjamindu.sql')
+const db = new sqlite3.Database(path.join(__dirname,'benjamindu.sql'))
 const HTTP_PORT = 4000
 const HTTPS_PORT = 443
-const UPLOAD_DIR = path.join(__dirname+'/media')
-const BUILD_DIR = path.join(__dirname+'/build')
+const UPLOAD_DIR = path.join(__dirname,'media')
+const BUILD_DIR = path.join(__dirname,'build')
 const PASSWORD_KEY = "skibidi"
 const USE_HTTPS = false;
 
@@ -60,13 +60,13 @@ app.post('/reorderposts',(req,res) => {
 
 app.post('/createpost',(req,res) => {
     if (authCheck(req.body.password,PASSWORD_KEY,res)) {
-        createPost(db,req.body.title,req.body.description,req.body.date,req.body.content,req.body.image,res)
+        createPost(db,req.body.title,req.body.description,req.body.date,req.body.content,req.body.image,req.body.category,res)
     }
 })
 
 app.post('/updatepost',(req,res) => {
     if (authCheck(req.body.password,PASSWORD_KEY,res)) {
-        updatePost(db,req.body.id,req.body.title,req.body.description,req.body.date,req.body.content,req.body.image,req.body.slug,res)
+        updatePost(db,req.body.id,req.body.title,req.body.description,req.body.date,req.body.content,req.body.image,req.body.slug,req.body.category,res)
     } 
 })
 
@@ -93,23 +93,38 @@ app.post('/deletefile',(req,res) => {
     }
 })
 
-// ---------------------------------------
+// Let the client-side router handle URLs that are not API or media routes.
+app.get(/.*/, (req,res) => {
+    res.sendFile(path.join(BUILD_DIR,'index.html'))
+})
 
-// app.get(/.*/, (req,res) => {
-//     res.sendFile(BUILD_DIR+'/index.html')
-// })
+function startServer() {
+    if (USE_HTTPS) {
+        const privateKey = fs.readFileSync('/etc/letsencrypt/live/benjamindu.com/privkey.pem', 'utf8')
+        const certificate = fs.readFileSync('/etc/letsencrypt/live/benjamindu.com/fullchain.pem', 'utf8')
+        const credentials = {key:privateKey, cert:certificate}
 
-if (USE_HTTPS) {
-    var privateKey  = fs.readFileSync('/etc/letsencrypt/live/benjamindu.com/privkey.pem', 'utf8');
-    var certificate = fs.readFileSync('/etc/letsencrypt/live/benjamindu.com/fullchain.pem', 'utf8');
-    var credentials = {key:privateKey, cert:certificate}
-
-    var httpsServer = https.createServer(credentials,app)
-    httpsServer.listen(HTTPS_PORT,() => {
-        console.log("benjamindu.com-v5 HTTPS server running on port "+HTTPS_PORT)
-    })
-} else {
-    app.listen(HTTP_PORT,() => {
-    console.log("benjamindu.com-v5 HTTP server running on port "+HTTP_PORT)
-    })
+        const httpsServer = https.createServer(credentials,app)
+        httpsServer.listen(HTTPS_PORT,() => {
+            console.log("benjamindu.com-v5 HTTPS server running on port "+HTTPS_PORT)
+        })
+    } else {
+        app.listen(HTTP_PORT,() => {
+            console.log("benjamindu.com-v5 HTTP server running on port "+HTTP_PORT)
+        })
+    }
 }
+
+// Complete schema migration before opening the HTTP listener.
+db.run("ALTER TABLE posts ADD COLUMN category TEXT NOT NULL DEFAULT 'serious'", (err) => {
+    if (err && !err.message.includes('duplicate column name')) {
+        console.log(err)
+    }
+    db.run("UPDATE posts SET category='serious' WHERE category IS NULL OR category NOT IN ('serious','fun')", (updateError) => {
+        if (updateError) console.log(updateError)
+        db.run("CREATE UNIQUE INDEX IF NOT EXISTS posts_slug_unique ON posts(slug) WHERE slug IS NOT NULL AND slug <> ''", (indexError) => {
+            if (indexError) console.log(indexError)
+            startServer()
+        })
+    })
+})

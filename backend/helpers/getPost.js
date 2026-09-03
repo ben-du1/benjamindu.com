@@ -16,37 +16,46 @@ function withSlug(row) {
 }
 
 function getPost(db, identifier, res) {
-    db.serialize(() => {
-        db.all('SELECT * FROM posts ORDER BY display_order ASC, id ASC', (err, rows) => {
+    const value = String(identifier ?? '').trim()
+
+    const sendOne = (row) => {
+        if (!row) {
+            return res.sendStatus(404)
+        }
+        return res.json(withSlug(row))
+    }
+
+    if (value && value !== '-1') {
+        const query = /^\d+$/.test(value)
+            ? 'SELECT * FROM posts WHERE id=?'
+            : 'SELECT * FROM posts WHERE slug=?'
+        return db.get(query, value, (err, row) => {
             if (err) {
                 console.log(err)
                 return res.sendStatus(500)
             }
-
-            if (!rows || rows.length === 0) {
-                return res.sendStatus(404)
+            if (row) {
+                return sendOne(row)
             }
 
-            const normalizedRows = rows.map(withSlug)
-            const value = String(identifier ?? '').trim()
-
-            if (!value || value === '-1') {
-                return res.send(JSON.stringify(normalizedRows))
-            }
-
-            const match = normalizedRows.find((row) => {
-                if (/^\d+$/.test(value) && Number(row.id) === Number(value)) {
-                    return true
+            // Older rows may not have a stored slug.
+            return db.all('SELECT * FROM posts ORDER BY display_order ASC, id ASC', (allError, rows) => {
+                if (allError) {
+                    console.log(allError)
+                    return res.sendStatus(500)
                 }
-                return row.slug === value || slugify(row.title) === value
+                const match = (rows || []).map(withSlug).find((post) => slugify(post.title) === value)
+                return sendOne(match)
             })
-
-            if (!match) {
-                return res.sendStatus(404)
-            }
-
-            return res.send(JSON.stringify(match))
         })
+    }
+
+    return db.all('SELECT * FROM posts ORDER BY display_order ASC, id ASC', (err, rows) => {
+        if (err) {
+            console.log(err)
+            return res.sendStatus(500)
+        }
+        return res.json((rows || []).map(withSlug))
     })
 }
 

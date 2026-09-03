@@ -8,6 +8,7 @@ export default function PostOptions({reloadPosts,post,canMoveUp,canMoveDown,canR
     const [date,setDate] = useState(post.date)
     const [content,setContent] = useState(post.content)
     const [image,setImage] = useState(post.image)
+    const [category,setCategory] = useState(post.category || 'serious')
     const [showMore,setShowMore] = useState(false)
     const [saving,setSaving] = useState(false)
     const [feedback,setFeedback] = useState('')
@@ -29,6 +30,7 @@ export default function PostOptions({reloadPosts,post,canMoveUp,canMoveDown,canR
                     "date":date,
                     "content":content,
                     "image":image
+                    ,"category":category
                 })
             })
 
@@ -88,6 +90,10 @@ export default function PostOptions({reloadPosts,post,canMoveUp,canMoveDown,canR
                 <input type="text" value={description} placeholder="Description" onChange={(e) => setDescription(e.target.value)}></input> <br/>
                 <input type="text" value={date} placeholder="Date (M.D.Y)" onChange={(e) => setDate(e.target.value)}></input> <br/>
                 <input type="text" value={image} placeholder="Image Link" onChange={(e) => setImage(e.target.value)}></input> <br />
+                <select value={category} onChange={(e) => setCategory(e.target.value)}>
+                    <option value="serious">Serious</option>
+                    <option value="fun">Fun</option>
+                </select> <br/>
                 <textarea type="text" value={content} placeholder="Content (Markdown)" onChange={(e) => setContent(e.target.value)}></textarea> <br/>
                 <button disabled={saving} onClick={updatePost}>{saving ? 'Saving...' : 'Save'}</button>
                 {feedback && <p className="console-feedback">{feedback}</p>}

@@ -2,7 +2,7 @@ export default function About() {
     return (
         <div className="About">
             <div className="img-container">
-                <img src="assets/websiteshot.webp"/>
+                <img src="assets/websiteshot.webp" alt="Screenshot of Ben's website"/>
             </div>
             <div className="about-content">
                 <h1>Hi, I'm Ben.</h1>

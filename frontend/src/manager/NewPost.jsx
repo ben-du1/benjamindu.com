@@ -8,6 +8,7 @@ export default function NewPost({show, onCreated}) {
     const [date,setDate] = useState('')
     const [content,setContent] = useState('')
     const [image,setImage] = useState('')
+    const [category,setCategory] = useState('serious')
     const [feedback, setFeedback] = useState('')
     const [saving, setSaving] = useState(false)
 
@@ -25,6 +26,7 @@ export default function NewPost({show, onCreated}) {
                     "date":date,
                     "content":content,
                     "image":image
+                    ,"category":category
                 })
             })
             if (!response.ok) {
@@ -35,6 +37,7 @@ export default function NewPost({show, onCreated}) {
             setDate('')
             setContent('')
             setImage('')
+            setCategory('serious')
             setFeedback('Post created successfully')
             if (onCreated) onCreated()
         } catch (err) {
@@ -53,6 +56,10 @@ export default function NewPost({show, onCreated}) {
                     <input type="text" placeholder="Description" value={description} onChange={(e) => setDescription(e.target.value)}></input> <br/>
                     <input type="text" placeholder="Date (M.D.Y)" value={date} onChange={(e) => setDate(e.target.value)}></input> <br/>
                     <input type="text" placeholder="Image Link" value={image} onChange={(e) => setImage(e.target.value)}></input> <br/>
+                    <select value={category} onChange={(e) => setCategory(e.target.value)}>
+                        <option value="serious">Serious</option>
+                        <option value="fun">Fun</option>
+                    </select> <br/>
                     <textarea type="text" placeholder="Content (Markdown)" value={content} onChange={(e) => setContent(e.target.value)}></textarea> <br/>
                     <button disabled={saving} onClick={createPost}>{saving ? 'Creating...' : 'Create'}</button>
                     {feedback && <p className="console-feedback">{feedback}</p>}

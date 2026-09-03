@@ -8,9 +8,12 @@ function authInit(password,PASSWORD_KEY,res) {
 function authCheck(password,PASSWORD_KEY,res) {
     if (password === PASSWORD_KEY) {
         return true
-    } else {
-        return false
     }
+
+    if (res && !res.headersSent) {
+        res.sendStatus(401)
+    }
+    return false
 }
 
 module.exports = {authInit:authInit,authCheck:authCheck}

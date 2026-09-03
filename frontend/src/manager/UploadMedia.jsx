@@ -5,6 +5,7 @@ export default function UploadMedia({show, onUploaded}) {
 
     const [file,setFile] = useState()
     const [feedback, setFeedback] = useState('')
+    const [uploading,setUploading] = useState(false)
     const fileInput = useRef(null)
 
     const uploadFile = async () => {
@@ -13,6 +14,7 @@ export default function UploadMedia({show, onUploaded}) {
             return
         }
         
+        setUploading(true)
         setFeedback('Uploading...')
         
         const formData = new FormData()
@@ -37,6 +39,8 @@ export default function UploadMedia({show, onUploaded}) {
             }
         } catch (err) {
             setFeedback('Error: ' + err.message)
+        } finally {
+            setUploading(false)
         }
     }
 
@@ -46,7 +50,7 @@ export default function UploadMedia({show, onUploaded}) {
                 show ?
                 <>
                     <input ref={fileInput} type="file" onChange={(e) => {setFile(e.target.files[0])}} />
-                    <button onClick={uploadFile}>Upload</button>
+                    <button disabled={uploading} onClick={uploadFile}>{uploading ? 'Uploading...' : 'Upload'}</button>
                     {feedback && <p>{feedback}</p>}
                 </>
                 :

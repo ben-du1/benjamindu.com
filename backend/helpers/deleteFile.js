@@ -1,10 +1,22 @@
 const fs = require('fs')
+const {resolveMediaPath} = require('./mediaPath.js')
 
 function deleteFile(fileName,UPLOAD_DIR,res) {
-    fs.unlink(UPLOAD_DIR+'/'+fileName,(err) => {
-        if (err) return res.send(404)
-        else return res.send(200)
-    })
+    resolveMediaPath(fileName, UPLOAD_DIR)
+        .then((filePath) => {
+            if (!filePath) {
+                return res.sendStatus(404)
+            }
+            return fs.promises.unlink(filePath)
+                .then(() => res.sendStatus(200))
+        })
+        .catch((error) => {
+            if (error.code === 'ENOENT') {
+                return res.sendStatus(404)
+            }
+            console.log(error)
+            return res.sendStatus(500)
+        })
 }
 
 module.exports = deleteFile
